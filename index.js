@@ -25,6 +25,8 @@ const express = require("express");
 
 const app = express();
 
+app.use(express.json());
+
 const getNumberOfEntries = () => {
   return data.length;
 };
@@ -67,6 +69,42 @@ app.delete("/api/persons/:id", (request, response) => {
   console.log("Here is the new list of numbers: ", newListOfPeople);
 
   response.json(newListOfPeople);
+});
+
+const checkContainsName = (name, phonelist) => {
+  let contains = false;
+
+  phonelist.forEach((number) => {
+    if (number.name === name) {
+      contains = true;
+    }
+  });
+
+  return contains;
+};
+
+app.post("/api/persons", (request, response) => {
+  const randomID = Math.floor(Math.random() * 1000000);
+
+  const body = request.body;
+
+  if (checkContainsName(body.name, data)) {
+    return response
+      .status(400)
+      .send({ error: "Entry already exists in the phonebook!" });
+  } else if (body.name && body.number) {
+    const newEntry = {
+      id: randomID,
+      name: body.name,
+      number: body.number,
+    };
+
+    const updatedData = data.concat(newEntry);
+    console.log(`Successfully added ${newEntry.name} to the phonelist!`);
+    return response.json(updatedData);
+  } else {
+    return response.status(400).send({ error: "Missing name or number!" });
+  }
 });
 
 app.set("port", 3001);
