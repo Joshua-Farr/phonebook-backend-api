@@ -47,7 +47,7 @@ app.get("/api/persons/:id", (request, response) => {
     return person.id === Number(id); // Changing param to number instead of string
   });
 
-  console.log("HERE IS THE PERSON", person);
+  console.log("Here is the person: ", person);
 
   if (person) {
     response.json(person);
@@ -55,8 +55,18 @@ app.get("/api/persons/:id", (request, response) => {
     response.status(400).end();
     console.log(`Unable to find person with id of ${id}`);
   }
+});
 
-  console.log(person);
+app.delete("/api/persons/:id", (request, response) => {
+  const id = request.params.id;
+
+  const newListOfPeople = data.filter((note) => {
+    return Number(note.id) !== Number(id);
+  });
+
+  console.log("Here is the new list of numbers: ", newListOfPeople);
+
+  response.json(newListOfPeople);
 });
 
 app.set("port", 3001);
