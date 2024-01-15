@@ -25,9 +25,38 @@ const express = require("express");
 
 const app = express();
 
+const getNumberOfEntries = () => {
+  return data.length;
+};
+
 app.get("/api/persons", (request, response) => {
-  console.log("Hello world! Here is the data: ", data);
   response.send(data);
+});
+
+app.get("/info", (request, response) => {
+  const timeStamp = new Date();
+  const utcTime = timeStamp.toUTCString(); // Formatting time to UTC
+  const html = `<p>Phonebook has info for ${getNumberOfEntries()} people.</p><p>${utcTime}</p>`; // Raw HTML that is sent back as a response
+  response.send(html);
+});
+
+// Finding individual person
+app.get("/api/persons/:id", (request, response) => {
+  const id = request.params.id;
+  const person = data.find((person) => {
+    return person.id === Number(id); // Changing param to number instead of string
+  });
+
+  console.log("HERE IS THE PERSON", person);
+
+  if (person) {
+    response.json(person);
+  } else {
+    response.status(400).end();
+    console.log(`Unable to find person with id of ${id}`);
+  }
+
+  console.log(person);
 });
 
 app.set("port", 3001);
